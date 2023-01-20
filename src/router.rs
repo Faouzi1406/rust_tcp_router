@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use crate::lib::{
+use std::collections::HashMap; use crate::lib::{
     path::convert_to_path,
     status_codes::{STATUS_OK},
     path::match_route,
@@ -70,11 +69,9 @@ impl RouteInfo {
 
             let length = function_call.len();
             let response =
-                format!("{STATUS_OK}\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{function_call}");
+                format!("{STATUS_OK}\r\nContent-Type: text/html\r\nContent-Length: {length}\r\n\r\n{function_call}");
 
-            stream.write_all(response.as_bytes()).unwrap();
-            stream.flush().expect("couldn't flush");
-            stream.shutdown(std::net::Shutdown::Both).expect("Coulnd't shutdown");
+            stream.write(response.as_bytes()).unwrap();
         }
     }
 }
