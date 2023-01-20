@@ -6,8 +6,8 @@ use crate::lib::{
     path::patern_insert_from_path
 };
 use std::{
-    io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream},
+    io::prelude::*,
+    net::TcpStream,
 };
 
 
@@ -19,24 +19,9 @@ pub struct RouteInfo {
     pub full_path:Option<String>
 }
 
-struct Route {
-    path:RouteInfo,
-    return_string:String
-}
 
 pub trait RouteParse {
     fn to_route(path:String) -> Self;
-}
-
-impl RouteInfo {
-    pub fn new() -> RouteInfo{
-        RouteInfo {
-            parent:None,
-            params:None,
-            type_route:None,
-            full_path:None
-        }
-    }
 }
 
 impl RouteParse for RouteInfo {
@@ -49,7 +34,7 @@ impl RouteParse for RouteInfo {
         }
 
         let params = route_info[1].split("/");
-        let mut params_in_route:Vec<String> = params
+        let params_in_route:Vec<String> = params
             .map(|x| x.to_string())
             .collect();
 
@@ -85,9 +70,11 @@ impl RouteInfo {
 
             let length = function_call.len();
             let response =
-            format!("{STATUS_OK}\r\nContent-Length: {length}\r\n\r\n{function_call}");
+                format!("{STATUS_OK}\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{function_call}");
 
             stream.write_all(response.as_bytes()).unwrap();
+            stream.flush().expect("couldn't flush");
+            stream.shutdown(std::net::Shutdown::Both).expect("Coulnd't shutdown");
         }
     }
 }

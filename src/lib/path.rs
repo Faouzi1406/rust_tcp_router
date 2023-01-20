@@ -47,8 +47,6 @@ pub fn patern_insert_from_path(
         route_params.insert(param, Some(param_vec.get(i).unwrap().to_owned()));
     };
 
-    println!("hier: {:#?}", param_vec);
-
     route_params
 }
 
@@ -56,7 +54,7 @@ pub fn match_route(path:String, incoming_path:String) -> bool {
     let mut path_find = path.clone();
     path_find.remove(0);
     let mut is_matched = path_find.matches("/").count() == incoming_path.matches("/").count();
-    let mut path_params:Vec<&str> = path_find
+    let path_params:Vec<&str> = path_find
         .split("/")
         .collect();
     let inc = incoming_path.split("/");

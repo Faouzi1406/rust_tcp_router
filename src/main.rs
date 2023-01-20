@@ -1,16 +1,16 @@
 mod router;
 mod lib;
+use std::{
+    io::{prelude::*, BufReader},
+    net::{TcpListener, TcpStream},
+    thread,
+};
 
 use std::collections::HashMap;
 use router::{
     RouteInfo,
     RouteParse
 };
-use std::{
-    io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream},
-};
-
 
 fn main() {
     let tcp_listener = TcpListener::bind("127.0.0.1:8000");
@@ -18,7 +18,9 @@ fn main() {
 
     for stream in listenr.incoming(){
         let stream_inc = stream.unwrap();
-        handle_connection(stream_inc);
+        thread::spawn(|| {
+            handle_connection(stream_inc);
+        });
     }
 }
 
@@ -31,7 +33,7 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
     format!("{:#?}: {:#?}", params.get("some").unwrap(), params.get("wow").unwrap())
 }
 
-fn hello(params:HashMap<String, Option<String>>) -> String {
+fn hello(_params:HashMap<String, Option<String>>) -> String {
     format!("dit is een route")
 }
 
@@ -46,7 +48,7 @@ fn handle_connection(mut stream:TcpStream) {
     let to_route:RouteInfo = RouteParse::to_route(connection[0].to_owned());
 
     //Routes
-    &to_route.get("hello/[wow]/cool", &mut stream, hello_route);
-    &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
-    &to_route.get("hello", &mut stream, hello);
+    let _ = &to_route.get("hello/[wow]/cool", &mut stream, hello_route);
+    let _ = &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
+    let _ = &to_route.get("hello", &mut stream, hello);
 }
