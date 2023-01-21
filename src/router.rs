@@ -47,24 +47,31 @@ impl RouteParse for RouteInfo {
     }
 }
 
-//
-// impl Router for Vec<String> {
-//  fn to_route(&self, dynamic_call_function:) -> Route {
-//          let function:String  = dynamic_call_function();
-//          todo!()
-//}
-//  }
-
 impl RouteInfo {
+    /// To create a get route
     pub fn get(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "GET".to_string());
+    }
+
+    pub fn response(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String, response_type:String){
         let parent = &self.parent.clone().unwrap();
 
         let to_path = convert_to_path(path.to_string());
 
         if &to_path.parent == parent && 
-        &self.type_route.clone() == &Some("GET".to_string()) && 
+        &self.type_route.clone() == &Some(response_type.to_string()) && 
         match_route(self.full_path.to_owned().unwrap(), path.to_owned())
         {
+            let partern = patern_insert_from_path(path, self.params.clone().unwrap().to_owned());
+            let function_call:String = call_function(partern);
+
+            let length = function_call.len();
+            let response =
+                format!("{STATUS_OK}\r\nContent-Type: text/html\r\nContent-Length: {length}\r\n\r\n{function_call}");
+
+            stream.write(response.as_bytes()).unwrap();
+        }
+        else if path == "*" && &self.type_route.clone() == &Some(response_type) {
             let partern = patern_insert_from_path(path, self.params.clone().unwrap().to_owned());
             let function_call:String = call_function(partern);
 

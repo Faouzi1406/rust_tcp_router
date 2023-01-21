@@ -36,16 +36,19 @@ pub fn patern_insert_from_path(
 
     let mut param_vec:Vec<String> = Vec::new();
 
-    for param in params {
-        if param != ""{
-            param_vec.push(param.to_owned());
+    if path != "" {
+        for param in params {
+            if param != ""{
+                param_vec.push(param.to_owned());
+            }
         }
+
+        for (i, path_param) in path_params.enumerate() {
+            let param = path_param.replace("[", "").replace("]", "");
+            route_params.insert(param, Some(param_vec.get(i).unwrap().to_owned()));
+        };
     }
 
-    for (i, path_param) in path_params.enumerate() {
-        let param = path_param.replace("[", "").replace("]", "");
-        route_params.insert(param, Some(param_vec.get(i).unwrap().to_owned()));
-    };
 
     route_params
 }
