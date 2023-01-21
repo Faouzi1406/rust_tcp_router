@@ -65,6 +65,7 @@ pub fn match_route(path:String, incoming_path:String) -> bool {
          if !param.contains("]") && !param.contains("["){
             if get_param != param {
                 is_matched = false;
+                break;
             }
          }
     }

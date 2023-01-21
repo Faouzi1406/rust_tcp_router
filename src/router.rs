@@ -1,6 +1,7 @@
-use std::collections::HashMap; use crate::lib::{
+use std::collections::HashMap; 
+use crate::routef::{
     path::convert_to_path,
-    status_codes::{STATUS_OK},
+    status_codes::STATUS_OK,
     path::match_route,
     path::patern_insert_from_path
 };
@@ -62,7 +63,7 @@ impl RouteInfo {
 
         if &to_path.parent == parent && 
         &self.type_route.clone() == &Some("GET".to_string()) && 
-        match_route(self.full_path.to_owned().unwrap(), path.to_string())
+        match_route(self.full_path.to_owned().unwrap(), path.to_owned())
         {
             let partern = patern_insert_from_path(path, self.params.clone().unwrap().to_owned());
             let function_call:String = call_function(partern);

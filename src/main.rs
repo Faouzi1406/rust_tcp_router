@@ -1,17 +1,17 @@
 mod router;
-mod lib;
+mod routef;
 
-use lib::{
+use routef::{
     html_rust::HtmlHead,
     html_rust::HtmlBody,
-    html_rust::Page
+    html_rust::Page,
+    thread_pool::ThreadPool
 };
 
 use std::{
     io::{prelude::*, BufReader},
     net::{TcpListener, TcpStream},
 };
-use threadpool;
 
 use std::collections::HashMap;
 use router::{
@@ -19,11 +19,10 @@ use router::{
     RouteParse
 };
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let tcp_listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind to address");
 
-    let thread_pool = threadpool::ThreadPool::new(4);
+    let thread_pool = ThreadPool::new(30);
 
     while let Ok((stream, _)) = tcp_listener.accept(){
         thread_pool.execute(|| {
@@ -67,13 +66,12 @@ fn hello(_params:HashMap<String, Option<String>>) -> String {
 
 fn handle_connection(mut stream:TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
-    let http_request: Vec<_> = buf_reader
+    let http_request: Vec<String> = buf_reader
         .lines()
         .map(|result| result.unwrap())
         .take_while(|line| !line.is_empty())
         .collect();
     
-
     if !http_request.is_empty(){
         let to_route:RouteInfo = RouteParse::to_route(http_request[0].to_owned());
         //Routes
@@ -83,6 +81,4 @@ fn handle_connection(mut stream:TcpStream) {
     }
 
     stream.flush().expect("flushing stream error");
-    stream.shutdown(std::net::Shutdown::Both).expect("Coulnd't shutdown");
-    drop(stream);
 }
