@@ -47,12 +47,9 @@ impl RouteParse for RouteInfo {
     }
 }
 
-impl RouteInfo {
-    /// To create a get route
-    pub fn get(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
-        self.response(path, stream, call_function, "GET".to_string());
-    }
 
+
+impl RouteInfo {
     pub fn response(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String, response_type:String){
         let parent = &self.parent.clone().unwrap();
 
@@ -84,3 +81,32 @@ impl RouteInfo {
     }
 }
 
+pub trait RouteTypes {
+    fn get(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+    fn post(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+    fn put(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+    fn delete(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+    fn patch(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+}
+
+impl RouteTypes for RouteInfo {
+    fn get(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "GET".to_string());
+    }
+
+    fn post(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "POST".to_string());
+    }
+
+    fn put(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "PUT".to_string());
+    }
+
+    fn delete(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "DELETE".to_string());
+    }
+
+    fn patch(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
+        self.response(path, stream, call_function, "DELETE".to_string());
+    }
+}

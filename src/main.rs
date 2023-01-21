@@ -5,7 +5,7 @@ use routef::{
     html_rust::HtmlHead,
     html_rust::HtmlBody,
     html_rust::Page,
-    thread_pool::ThreadPool
+    thread_pool::ThreadPool,
 };
 
 use std::{
@@ -16,7 +16,8 @@ use std::{
 use std::collections::HashMap;
 use router::{
     RouteInfo,
-    RouteParse
+    RouteParse,
+    RouteTypes
 };
 
 fn main() {
@@ -55,8 +56,14 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
     );
 
     page.body = vec![
+        HtmlBody::H1("Hello".to_string()),
         HtmlBody::P(format!("Dit is van de server {}", params.get("wow").unwrap().to_owned().unwrap())),
-        HtmlBody::P(format!("Cool toch?"))
+        HtmlBody::P(format!("Cool toch?")),
+        HtmlBody::Img(routef::html_rust::Img {
+            src:"https://99designs-blog.imgix.net/blog/wp-content/uploads/2022/06/Starbucks_Corporation_Logo_2011.svg-e1657703028844.png?auto=format&q=60&fit=max&w=930".to_string(),
+            width:400,
+            height:400
+        })
     ];
 
     page.create_page().0
@@ -76,12 +83,15 @@ fn handle_connection(mut stream:TcpStream) {
     
     if !http_request.is_empty(){
         let to_route:RouteInfo = RouteParse::to_route(http_request[0].to_owned());
-        //Routes
+        //Get routes
         let _ = &to_route.get("hello/[wow]/cool", &mut stream, hello_route);
         let _ = &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
         let _ = &to_route.get("hello", &mut stream, hello);
         let _ = &to_route.get("", &mut stream, index);
         let _ = &to_route.get("*", &mut stream, four_0_four);
+
+        //Post routes
+        let _ = &to_route.post("posting", &mut stream, index);
     }
 
     stream.flush().expect("flushing stream error");

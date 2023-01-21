@@ -2,9 +2,16 @@ pub enum HtmlHead {
     TAG(String),
 }
 
+pub struct Img {
+    pub src:String, 
+    pub width:i32,
+    pub height:i32
+}
+
 pub enum HtmlBody {
     H1(String),
     P(String),
+    Img(Img)
 }
 
 pub struct HtmlString(pub String);
@@ -43,12 +50,12 @@ impl Page {
             match tag { 
                 HtmlBody::H1(value) => {body_tags.push_str(format!("<h1>{value}</h1>\n").as_str())}
                 HtmlBody::P(value) => {body_tags.push_str(format!("<p>{value}</p>\n").as_str())}
+                HtmlBody::Img(value) => {body_tags.push_str(format!("<img src={} width={} height={} />\n", value.src, value.width, value.height).as_str())}
             }
         };
 
         body_tags.push_str("</body>");
         HtmlString(body_tags)
-        
     }
 
     pub fn create_page(&self) -> HtmlString {
