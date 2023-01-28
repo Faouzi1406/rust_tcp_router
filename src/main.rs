@@ -4,9 +4,10 @@ mod routef;
 use routef::{
     html_rust::HtmlHead,
     html_rust::HtmlBody,
-    html_rust::Page,
+    html_rust::{Page, CSS},
     thread_pool::ThreadPool,
 };
+
 
 use std::{
     io::{prelude::*, BufReader},
@@ -23,7 +24,7 @@ use router::{
 fn main() {
     let tcp_listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind to address");
 
-    let thread_pool = ThreadPool::new(30);
+    let thread_pool = ThreadPool::new(16);
 
     while let Ok((stream, _)) = tcp_listener.accept(){
         thread_pool.execute(|| {
@@ -38,12 +39,14 @@ fn hello_route(params:HashMap<String, Option<String>>) -> String {
 }
 
 
-fn index(params:HashMap<String, Option<String>>) -> String {
+fn index(_params:HashMap<String, Option<String>>) -> String {
+    let some_value = "hello!";
+
     format!("Dit is de index route")
 }
 
 
-fn four_0_four(params:HashMap<String, Option<String>>) -> String {
+fn four_0_four(_params:HashMap<String, Option<String>>) -> String {
     format!("Deze pagina bestaat niet :(")
 }
 
@@ -63,7 +66,13 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
             src:"https://99designs-blog.imgix.net/blog/wp-content/uploads/2022/06/Starbucks_Corporation_Logo_2011.svg-e1657703028844.png?auto=format&q=60&fit=max&w=930".to_string(),
             width:400,
             height:400
-        })
+        }),
+        HtmlBody::FileWithProps("public/index.html".to_string(), params.to_owned()),
+        HtmlBody::P(format!("some params: {:#?}", params))
+    ];
+
+    page.css = vec![
+        CSS::File("public/style.css".to_string())
     ];
 
     page.create_page().0
