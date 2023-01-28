@@ -24,6 +24,10 @@ use router::{
 
 fn main() {
     let tcp_listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind to address");
+=======
+fn main() {
+    let tcp_listener = TcpListener::bind("0.0.0.0:80").expect("Failed to bind to address");
+>>>>>>> local
 
     let thread_pool = ThreadPool::new(16);
 
