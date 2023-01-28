@@ -78,6 +78,25 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
     page.create_page().0
 }
 
+fn test_route(params:HashMap<String, Option<String>>) -> String{
+let mut page:Page = Page::new();
+
+    page.head = vec!(
+        HtmlHead::TAG(format!("<title>Welkom op de web</title>")),
+        HtmlHead::TAG(format!("<link rel={} type={} href={}>", "icon", "image/x-icon", "https://web-dev.imgix.net/image/vS06HQ1YTsbMKSFTIPl2iogUQP73/KAOmqplghJT2PrJlOgZ5.png?auto=format"))
+    );
+
+    page.body = vec![
+        HtmlBody::FileWithProps("public/test.html".to_string(), params.to_owned()),
+    ];
+
+    page.css = vec![
+        CSS::File("public/style.css".to_string())
+    ];
+
+    page.create_page().0
+}
+
 fn hello(_params:HashMap<String, Option<String>>) -> String {
     format!("dit is een route")
 }
@@ -96,7 +115,10 @@ fn handle_connection(mut stream:TcpStream) {
         let _ = &to_route.get("hello/[wow]/cool", &mut stream, hello_route);
         let _ = &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
         let _ = &to_route.get("hello", &mut stream, hello);
+        let _ = &to_route.get("test/route/[test]", &mut stream, test_route);
         let _ = &to_route.get("", &mut stream, index);
+
+        //Every route should come before this  fall back route
         let _ = &to_route.get("*", &mut stream, four_0_four);
 
         //Post routes
