@@ -36,7 +36,7 @@ pub fn patern_insert_from_path(
 
     let mut param_vec:Vec<String> = Vec::new();
 
-    if path != "" {
+    if path != "" && path != "*" {
         for param in params {
             if param != ""{
                 param_vec.push(param.to_owned());

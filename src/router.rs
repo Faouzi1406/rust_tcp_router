@@ -110,3 +110,13 @@ impl RouteTypes for RouteInfo {
         self.response(path, stream, call_function, "DELETE".to_string());
     }
 }
+
+pub trait RouteFiles {
+    fn serve_folder(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
+}
+
+// impl RouteFiles for RouteInfo {
+//     fn serve_folder(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) ->  ){
+//         
+//     }
+// }
