@@ -1,5 +1,6 @@
 mod router;
 mod routef;
+mod tests;
 
 use routef::{
     html_rust::HtmlHead,
@@ -79,19 +80,14 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
 }
 
 fn test_route(params:HashMap<String, Option<String>>) -> String{
-let mut page:Page = Page::new();
+    let mut page:Page = Page::new();
 
     page.head = vec!(
         HtmlHead::TAG(format!("<title>Welkom op de web</title>")),
-        HtmlHead::TAG(format!("<link rel={} type={} href={}>", "icon", "image/x-icon", "https://web-dev.imgix.net/image/vS06HQ1YTsbMKSFTIPl2iogUQP73/KAOmqplghJT2PrJlOgZ5.png?auto=format"))
     );
 
     page.body = vec![
         HtmlBody::FileWithProps("public/test.html".to_string(), params.to_owned()),
-    ];
-
-    page.css = vec![
-        CSS::File("public/style.css".to_string())
     ];
 
     page.create_page().0
