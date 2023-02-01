@@ -124,14 +124,12 @@ pub fn add_param(value: String, params: HashMap<String, Option<String>>) -> Stri
     let mut return_value = value.clone();
     let mut index_into = 0;
     let matching_params = return_value.matches("}").count();
-    println!("{matching_params}");
 
     for i in 0..matching_params {
 
         let opening = return_value.find(|x| x == '{').unwrap_or(0);
         let closing = return_value.find(|x| x == '}').unwrap_or(0);
 
-        println!("{return_value} opening:{opening}, {closing}");
 
         if opening > 0 && closing > opening {
             let mut value = return_value
