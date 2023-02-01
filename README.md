@@ -25,6 +25,13 @@ Get started with dynamic routing today! 💥
 ## Getting Started
 
 There is a lib_version branch, this branch contains the library version of the implementations used in the main.rs file. 
+All you have to do is put this in your Cargo.toml file: 
+
+```Rust 
+router = { git = "https://github.com/Faouzi1406/rust_tcp_router", branch="lib_version" }
+```
+
+After that you will just need to create the TCP server and then you can use this library for routing and use the html rendering engine.
 
 ### Prerequisites
 
