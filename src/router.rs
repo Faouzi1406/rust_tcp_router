@@ -107,7 +107,7 @@ impl RouteTypes for RouteInfo {
     }
 
     fn patch(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String){
-        self.response(path, stream, call_function, "DELETE".to_string());
+        self.response(path, stream, call_function, "PATCH".to_string());
     }
 }
 
