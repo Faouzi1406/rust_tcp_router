@@ -41,4 +41,4 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## License
 
-**Hodl**
+<https://github.com/Faouzi1406/rust_tcp_router/blob/main/License> 
