@@ -1,14 +1,13 @@
-mod router;
 mod routef;
 mod tests;
 
 use routef::{
-    html_rust::HtmlHead,
     html_rust::HtmlBody,
+    html_rust::HtmlHead,
     html_rust::{Page, CSS},
+    router::{RouteInfo, RouteParse, RouteTypes},
     thread_pool::ThreadPool,
 };
-
 
 use std::{
     io::{prelude::*, BufReader},
@@ -16,43 +15,35 @@ use std::{
 };
 
 use std::collections::HashMap;
-use router::{
-    RouteInfo,
-    RouteParse,
-    RouteTypes
-};
 
 fn main() {
-    let tcp_listener = TcpListener::bind("127.0.0.1:8000").expect("Failed to bind to address");
+    let tcp_listener = TcpListener::bind("0.0.0.0:80").expect("Failed to bind to address");
 
     let thread_pool = ThreadPool::new(16);
 
-    while let Ok((stream, _)) = tcp_listener.accept(){
+    while let Ok((stream, _)) = tcp_listener.accept() {
         thread_pool.execute(|| {
             handle_connection(stream);
         });
     }
 }
 
-
-fn hello_route(params:HashMap<String, Option<String>>) -> String {
+fn hello_route(params: HashMap<String, Option<String>>) -> String {
     format!("{:#?}", params.get("wow").unwrap().to_owned().unwrap())
 }
 
-
-fn index(_params:HashMap<String, Option<String>>) -> String {
+fn index(_params: HashMap<String, Option<String>>) -> String {
     let some_value = "hello!";
 
     format!("Dit is de index route")
 }
 
-
-fn four_0_four(_params:HashMap<String, Option<String>>) -> String {
+fn four_0_four(_params: HashMap<String, Option<String>>) -> String {
     format!("Deze pagina bestaat niet :(")
 }
 
-fn some_route(params:HashMap<String, Option<String>>) -> String {
-    let mut page:Page = Page::new();
+fn some_route(params: HashMap<String, Option<String>>) -> String {
+    let mut page: Page = Page::new();
 
     page.head = vec!(
         HtmlHead::TAG(format!("<title>Welkom op de web</title>")),
@@ -72,41 +63,38 @@ fn some_route(params:HashMap<String, Option<String>>) -> String {
         HtmlBody::P(format!("some params: {:#?}", params))
     ];
 
-    page.css = vec![
-        CSS::File("public/style.css".to_string())
-    ];
+    page.css = vec![CSS::File("public/style.css".to_string())];
 
     page.create_page().0
 }
 
-fn test_route(params:HashMap<String, Option<String>>) -> String{
-    let mut page:Page = Page::new();
+fn test_route(params: HashMap<String, Option<String>>) -> String {
+    let mut page: Page = Page::new();
 
-    page.head = vec!(
-        HtmlHead::TAG(format!("<title>Welkom op de web</title>")),
-    );
+    page.head = vec![HtmlHead::TAG(format!("<title>Welkom op de web</title>"))];
 
-    page.body = vec![
-        HtmlBody::FileWithProps("public/test.html".to_string(), params.to_owned()),
-    ];
+    page.body = vec![HtmlBody::FileWithProps(
+        "public/test.html".to_string(),
+        params.to_owned(),
+    )];
 
     page.create_page().0
 }
 
-fn hello(_params:HashMap<String, Option<String>>) -> String {
+fn hello(_params: HashMap<String, Option<String>>) -> String {
     format!("dit is een route")
 }
 
-fn handle_connection(mut stream:TcpStream) {
+fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<String> = buf_reader
         .lines()
         .map(|result| result.unwrap())
         .take_while(|line| !line.is_empty())
         .collect();
-    
-    if !http_request.is_empty(){
-        let to_route:RouteInfo = RouteParse::to_route(http_request[0].to_owned());
+
+    if !http_request.is_empty() {
+        let to_route: RouteInfo = RouteParse::to_route(http_request[0].to_owned());
         //Get routes
         let _ = &to_route.get("hello/[wow]/cool", &mut stream, hello_route);
         let _ = &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
