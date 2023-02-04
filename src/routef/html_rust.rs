@@ -1,8 +1,5 @@
-use std::{
-    collections::{hash_map::Values, HashMap},
-    fmt::format,
-    fs::{self, read_to_string},
-};
+use std::collections::HashMap;
+
 
 pub enum HtmlHead {
     TAG(String),
@@ -31,13 +28,6 @@ pub struct Page {
     pub head: Vec<HtmlHead>,
     pub body: Vec<HtmlBody>,
     pub css: Vec<CSS>,
-}
-
-pub fn read_html_add_props(htmlFile: String, props: HashMap<String, String>) -> String {
-    let open_file = fs::read_to_string(htmlFile).expect(panic!("HTML_FILE"));
-    let html = open_file.to_string();
-    let html = format!("<div id='frouter_props'>{:#?}</div>", props) + open_file.as_str();
-    return html;
 }
 
 impl Page {
@@ -95,10 +85,10 @@ impl Page {
         for css in &self.css {
             match css {
                 CSS::File(value) => {
-                    let open_file = fs::read_to_string(value);
+                    let open_file = std::fs::read_to_string(value);
                     match open_file {
                         Ok(value) => current_css.push_str(value.as_str()),
-                        Err(value) => panic!("error"),
+                        Err(value) => panic!("error {value}"),
                     }
                 }
             }
@@ -122,17 +112,16 @@ impl Page {
 pub fn add_param(value: String, params: HashMap<String, Option<String>>) -> String {
     //add_param in between opening and closing  clone()
     let mut return_value = value.clone();
-    let mut index_into = 0;
     let matching_params = return_value.matches("}").count();
 
-    for i in 0..matching_params {
+    for _ in 0..matching_params {
 
         let opening = return_value.find(|x| x == '{').unwrap_or(0);
         let closing = return_value.find(|x| x == '}').unwrap_or(0);
 
 
         if opening > 0 && closing > opening {
-            let mut value = return_value
+            let value = return_value
                 .get(opening..closing)
                 .expect("Couldn't get the param inside the string")
                 .replace("}", "")
@@ -159,7 +148,7 @@ pub fn add_param(value: String, params: HashMap<String, Option<String>>) -> Stri
 
 pub fn html_with_params(file: String, params: HashMap<String, Option<String>>) -> HtmlString {
     let open_file =
-        fs::read_to_string(file).expect("Couldn't read file {file} are you sure the file exists?");
+        std::fs::read_to_string(file).expect("Couldn't read file {file} are you sure the file exists?");
     let mut html_string: String = String::new();
 
     html_string += add_param(open_file.to_owned(), params.to_owned()).as_str();

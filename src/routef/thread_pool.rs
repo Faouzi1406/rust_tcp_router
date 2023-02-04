@@ -9,7 +9,6 @@ pub struct ThreadPool {
     sender: mpsc::Sender<Job>,
 }
 
-
 impl ThreadPool {
     pub fn new(size:usize) -> ThreadPool  {
         assert!(size >0);
@@ -19,7 +18,7 @@ impl ThreadPool {
 
         let receiver = Arc::new(Mutex::new(receiver));
 
-        for id in 0..size{
+        for id in 0..size {
             threads_workers.push(Workers::new(id, Arc::clone(&receiver)))
         }
 
@@ -65,10 +64,9 @@ impl Workers {
             }
         });
 
-        Workers {
+       Workers {
             id,
             thread,
         }
     } 
-    
 }
