@@ -17,7 +17,7 @@ use std::{
 use std::collections::HashMap;
 
 fn main() {
-    let tcp_listener = TcpListener::bind("0.0.0.0:80").expect("Failed to bind to address");
+    let tcp_listener = TcpListener::bind("0.0.0.0:8000").expect("Failed to bind to address");
 
     let thread_pool = ThreadPool::new(16);
 
