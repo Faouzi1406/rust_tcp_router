@@ -1,4 +1,4 @@
-use std::{collections::HashMap, os::unix::prelude::FileExt, fs::File}; 
+use std::collections::HashMap; 
 use crate::routef::{
     path::convert_to_path,
     status_codes::STATUS_OK,
@@ -112,5 +112,11 @@ impl RouteTypes for RouteInfo {
 }
 
 pub trait RouteFiles {
-    fn serve_file(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> Option<File>);
+    fn serve_folder(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) -> String);
 }
+
+// impl RouteFiles for RouteInfo {
+//     fn serve_folder(&self, path:&'static str,  stream:&mut TcpStream,  call_function:fn(params:HashMap<String, Option<String>>) ->  ){
+//         
+//     }
+// }

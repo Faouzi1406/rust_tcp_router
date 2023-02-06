@@ -81,11 +81,6 @@ fn test_route(params: HashMap<String, Option<String>>) -> String {
     page.create_page().0
 }
 
-fn test_file(params: HashMap<String, Option<String>>) -> String {
-    let file = include_str!("./main.rs");
-    file.to_string()
-}
-
 fn hello(_params: HashMap<String, Option<String>>) -> String {
     format!("dit is een route")
 }
@@ -105,7 +100,6 @@ fn handle_connection(mut stream: TcpStream) {
         let _ = &to_route.get("hello/[wow]/goodbye/[some]", &mut stream, some_route);
         let _ = &to_route.get("hello", &mut stream, hello);
         let _ = &to_route.get("test/route/[test]", &mut stream, test_route);
-        let _ = &to_route.get("test/test", &mut stream, test_file);
         let _ = &to_route.get("", &mut stream, index);
 
         //Every route should come before this  fall back route
